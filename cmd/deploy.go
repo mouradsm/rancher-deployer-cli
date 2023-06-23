@@ -4,6 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"github.com/mouradsm/rancher-deployer-cli/deployer"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +14,7 @@ var deployCmd = &cobra.Command{
 	Short: "Deploy a workload to rancher",
 	Long:  `Deploy, creating or updating, a workload to a k8s cluster managed by rancher`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//fmt.Println("deploy called")
+		deployer.Deploy(IgnoreVerifySSL)
 	},
 }
 
@@ -27,7 +28,7 @@ var Project string
 var Namespace string
 var Deployment string
 var Image string
-var VerifySSL bool
+var IgnoreVerifySSL bool
 var ServiceName string
 var ServiceListeningPort string
 var ServiceTargetPort string
@@ -38,22 +39,22 @@ func init() {
 	rootCmd.AddCommand(deployCmd)
 
 	deployCmd.Flags().StringVarP(&RancherUrl, "rancher-url", "u", "", "rancher server url (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "rancher-key", "k", "", "rancher server key (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "rancher-secret", "s", "", "rancher server secret (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "cluster", "c", "", "rancher cluster name (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "project", "p", "", "rancher project name (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "namespace", "n", "default", "kubernetes namespace name")
-	deployCmd.Flags().StringVarP(&RancherUrl, "deployment", "d", "", "kubernetes deployment name (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "image", "i", "", "docker image (required)")
+	deployCmd.Flags().StringVarP(&RancherKey, "rancher-key", "k", "", "rancher server key (required)")
+	deployCmd.Flags().StringVarP(&RancherSecret, "rancher-secret", "s", "", "rancher server secret (required)")
+	deployCmd.Flags().StringVarP(&Cluster, "cluster", "c", "", "rancher cluster name (required)")
+	deployCmd.Flags().StringVarP(&Project, "project", "p", "", "rancher project name (required)")
+	deployCmd.Flags().StringVarP(&Namespace, "namespace", "n", "default", "kubernetes namespace name")
+	deployCmd.Flags().StringVarP(&RancherUrl, "Deployment", "d", "", "kubernetes deployment name (required)")
+	deployCmd.Flags().StringVarP(&RancherUrl, "Image", "i", "", "docker image (required)")
 
-	//deployCmd.Flags().BoolVar(&VerifySSL, "no-ssl-verify", true, "Flag to disable ssl verify on self-signed certs")
+	deployCmd.Flags().BoolVar(&IgnoreVerifySSL, "no-ssl-verify", true, "Flag to disable ssl verify on self-signed certs")
 
-	deployCmd.MarkFlagRequired("rancher-url")
-	deployCmd.MarkFlagRequired("rancher-key")
-	deployCmd.MarkFlagRequired("rancher-secret")
-	deployCmd.MarkFlagRequired("cluster")
-	deployCmd.MarkFlagRequired("project")
-	//deployCmd.MarkFlagRequired("namespace")
-	deployCmd.MarkFlagRequired("deployment")
-	deployCmd.MarkFlagRequired("image")
+	// deployCmd.MarkFlagRequired("rancher-url")
+	// deployCmd.MarkFlagRequired("rancher-key")
+	// deployCmd.MarkFlagRequired("rancher-secret")
+	// deployCmd.MarkFlagRequired("cluster")
+	// deployCmd.MarkFlagRequired("project")
+	// //deployCmd.MarkFlagRequired("namespace")
+	// deployCmd.MarkFlagRequired("deployment")
+	// deployCmd.MarkFlagRequired("image")
 }
