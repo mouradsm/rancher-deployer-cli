@@ -14,7 +14,24 @@ var deployCmd = &cobra.Command{
 	Short: "Deploy a workload to rancher",
 	Long:  `Deploy, creating or updating, a workload to a k8s cluster managed by rancher`,
 	Run: func(cmd *cobra.Command, args []string) {
-		deployer.Deploy(IgnoreVerifySSL)
+
+		params := map[string]string{
+			"rancher_url":            RancherUrl,
+			"rancher_key":            RancherKey,
+			"rancher_secret":         RancherSecret,
+			"cluster":                Cluster,
+			"project":                Project,
+			"namespace":              Namespace,
+			"deployment":             Deployment,
+			"image":                  Image,
+			"service_name":           ServiceName,
+			"service_listening_port": ServiceListeningPort,
+			"service_target_port":    ServiceTargetPort,
+			"service_selector_label": ServiceSelectorLabel,
+			"service_selector_value": ServiceSelectorValue,
+		}
+
+		deployer.Deploy(params, IgnoreVerifySSL)
 	},
 }
 
@@ -44,8 +61,8 @@ func init() {
 	deployCmd.Flags().StringVarP(&Cluster, "cluster", "c", "", "rancher cluster name (required)")
 	deployCmd.Flags().StringVarP(&Project, "project", "p", "", "rancher project name (required)")
 	deployCmd.Flags().StringVarP(&Namespace, "namespace", "n", "default", "kubernetes namespace name")
-	deployCmd.Flags().StringVarP(&RancherUrl, "Deployment", "d", "", "kubernetes deployment name (required)")
-	deployCmd.Flags().StringVarP(&RancherUrl, "Image", "i", "", "docker image (required)")
+	deployCmd.Flags().StringVarP(&Deployment, "deployment", "d", "", "kubernetes deployment name (required)")
+	deployCmd.Flags().StringVarP(&Image, "image", "i", "", "docker image (required)")
 
 	deployCmd.Flags().BoolVar(&IgnoreVerifySSL, "no-ssl-verify", true, "Flag to disable ssl verify on self-signed certs")
 
@@ -54,7 +71,7 @@ func init() {
 	// deployCmd.MarkFlagRequired("rancher-secret")
 	// deployCmd.MarkFlagRequired("cluster")
 	// deployCmd.MarkFlagRequired("project")
-	// //deployCmd.MarkFlagRequired("namespace")
+	// deployCmd.MarkFlagRequired("namespace")
 	// deployCmd.MarkFlagRequired("deployment")
 	// deployCmd.MarkFlagRequired("image")
 }
