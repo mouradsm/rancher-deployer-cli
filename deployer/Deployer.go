@@ -41,20 +41,48 @@ func Deploy(params map[string]string, insecureSkipVerify bool) {
 	clusterResponse := sendRequest(c, http.MethodGet, clusterUrl, bearerToken, nil)
 
 	cluster := gjson.Get(string(clusterResponse), "data")
-
 	if len(cluster.Array()) == 0 {
 		log.Fatal("[FATAL] The cluster does not exist! ")
 	}
+
+	clusterId := gjson.Get(cluster.Array()[0].String(), "id")
 
 	projectUrl := baseUrl + "/projects?name=" + params["project"]
 
 	projectResponse := sendRequest(c, http.MethodGet, projectUrl, bearerToken, nil)
 
-	project := gjson.Get(string(projectResponse), "data")
-
+	project := gjson.Get(string(projectResponse), "data.0")
 	if len(project.Array()) == 0 {
-		log.Fatal("[FATAL] The project does not exist! ")
+		log.Fatal("[FATAL] The project does not exist!")
 	}
+
+	projectId := gjson.Get(project.String(), "id")
+
+	namespaceUrl := fmt.Sprintf("%v/clusters/%v/namespaces?name=%v", baseUrl, clusterId, params["namespace"])
+
+	namespaceResponse := sendRequest(c, http.MethodGet, namespaceUrl, bearerToken, nil)
+
+	namespace := gjson.Get(string(namespaceResponse), "data")
+
+	if len(namespace.Array()) == 0 {
+		log.Fatal("[FATAL] The namespace does not exist!")
+	}
+
+	workloadUrl := fmt.Sprintf("%v/projects/%v/workloads", baseUrl, projectId)
+	//serviceUrl := fmt.Sprintf("%v/projects/%v/workloads", baseUrl, projectId)
+
+	workloadResponse := sendRequest(c, http.MethodGet, workloadUrl, bearerToken, nil)
+	targetWorkload := gjson.Get(string(workloadResponse), "data.#(name=="+params["deployment"]+")")
+
+	workloadHttpMethod := http.MethodPost
+
+	if targetWorkload.Type == gjson.Null {
+		workloadHttpMethod = http.MethodPut
+	}
+
+	// /workloadRequesBody := map[string]string{}
+
+	sendRequest(c, workloadHttpMethod, workloadUrl, bearerToken, make(map[string]string))
 
 }
 
